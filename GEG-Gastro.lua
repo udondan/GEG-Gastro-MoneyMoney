@@ -109,7 +109,7 @@ function formatDate(ts)
   return os.date("%d.%m.%Y", ts)
 end
 
--- Parses the date cell of an order row, e.g. "Mo 21.09.26". Returns a
+-- Parses the date cell of an order row, e.g. "Mo 03.03.31". Returns a
 -- timestamp at noon of that day (avoids shifting the date across time
 -- zones) or nil when the text contains no date.
 function parseOrderDate(s)

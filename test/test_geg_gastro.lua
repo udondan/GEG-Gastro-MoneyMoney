@@ -35,7 +35,7 @@ eq(env.SupportsBank("ProtocolWebBanking", "Other"), false, "SupportsBank rejects
 -- String / amount helpers ---------------------------------------------------
 eq(env.trim("  a b \n"), "a b", "trim")
 eq(env.normalizeMultiline("  Testsuppe \r\n***\n\n  Nudeln mit\nSoße  "), "Testsuppe\n***\nNudeln mit\nSoße", "normalizeMultiline")
-eq(env.parseAmount("237,00"), 237.0, "parseAmount German")
+eq(env.parseAmount("98,00"), 98.0, "parseAmount German")
 eq(env.parseAmount("1.234,56"), 1234.56, "parseAmount thousands separator")
 eq(env.parseAmount("3.50"), 3.5, "parseAmount dot decimal")
 eq(env.parseAmount("abc"), nil, "parseAmount garbage")
