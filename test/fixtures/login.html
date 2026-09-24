@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <title>GEG Gastro Essensbestellung - Anmelden</title>
+    </head>
+    <body>
+        <div class="container-fluid ">
+            <div class="headerTopContainer">
+            <div id="header" class="header">
+<div id="auth-box" class="auth-box">
+    <div class="inner-box user-info">
+            <form action="/login/" method="post" id="login_form">
+                <ul class="auth-form">
+                    <li class="username-box">
+                        <input type="text" id="email" name="username" tabindex="1" class="form-control" placeholder="E-Mail / Benutzername" maxlength="75"/>
+                    </li>
+                    <li class="password-box">
+                        <input type="password" id="pass" name="password" tabindex="2" class="form-control" placeholder="Passwort"/>
+                    </li>
+                    <li class="login-button-box">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="TESTTOKEN">
+                        <button id="login_submit" tabindex="3" type="submit" class="btn btn-primary btn-sm">Anmelden</button>
+                    </li>
+                </ul>
+            </form>
+    </div>
+</div>
+            </div>
+            </div>
+
+            <div class="content">
+    <div class="page-header">
+        <h1>Anmelden</h1>
+    </div>
+
+    <form method="post" action="/login/">
+        <input type="hidden" name="csrfmiddlewaretoken" value="TESTTOKEN">
+        <input type="hidden" name="next" value="/kunden/bestelluebersicht/" />
+        <div class="panel panel-default">
+            <div class="panel-heading">Bitte geben Sie Ihre E-Mailadresse und Ihr Passwort ein.</div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="id_username" class="control-label">E-Mail / Benutzername</label>
+                    <input type="text" name="username" id="id_username" class="form-control" value=""/>
+                </div>
+                <div class="form-group">
+                    <label for="id_password">Passwort</label>
+                    <input type="password" name="password" id="id_password" class="form-control" value=""/>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary" tabindex="4">Anmelden</button>
+    </form>
+            </div>
+        </div>
+    </body>
+</html>

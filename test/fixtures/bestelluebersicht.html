@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <title>GEG Gastro Essensbestellung - Essenbestellung</title>
+    </head>
+    <body>
+        <div class="container-fluid ">
+            <div class="headerTopContainer">
+            <div id="header" class="header">
+<div id="auth-box" class="auth-box">
+    <div class="inner-box user-info">
+            <a href="/logout/" class="btn btn-default btn-sm">Abmelden</a>
+                <div class="header-account-balance">
+                    Guthaben: <span id="header_account_balance_value">123,45</span> &euro;
+                </div>
+    </div>
+</div>
+      <ul id="nav" role="navigation" class="navbar nav nav-pills navigation">
+          <li class=""><a href="/kunden/essen/">Essenbestellung</a></li>
+          <li class=""><a href="/kunden/bestelluebersicht/">Bestellübersicht</a></li>
+          <li class=""><a href="/kunden/guthaben/">Guthaben</a></li>
+      </ul>
+            </div>
+            </div>
+
+            <div class="content">
+    <div>
+        <div class="page-header">
+            <h1>Bestellübersicht</h1>
+        </div>
+
+<form  class="form-inline" method="get" > <div id="div_id_date_from" class="form-group"> <label for="id_date_from" class=" requiredField ">
+                Von
+            </label> <input type="text" name="date_from" value="02.03.2031" class="dateinput" placeholder="Von" required id="id_date_from"> </div> <div id="div_id_date_to" class="form-group"> <label for="id_date_to" class=" requiredField ">
+                Bis
+            </label> <input type="text" name="date_to" value="12.05.2031" class="dateinput" placeholder="Bis" required id="id_date_to"> </div> <button  class="btn btn-info mb-2" type="submit">Anzeigen</button> </form>
+
+<div class="results panel panel-default panel-mealplan" id="order-table">
+    <div class="panel-heading">
+            <span class="childname">Muster, Anna</span>
+    </div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table style="width: 100%" class="table food-order">
+                <thead>
+                <tr>
+                    <th class="top">Datum</th>
+                    <th>Menü</th>
+                    <th>Beschreibung</th>
+                    <th>Menge</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="menu-cell">Mo 03.03.31
+                        </td>
+                        <td class="menu-cell">Zertifiziert</td>
+                        <td class="menu-cell">Testsuppe
+***
+Beispielnudeln mit
+Mustersoße</td>
+                        <td class="menu-cell text-center text-nowrap nowrap">1</td>
+                    </tr>
+                    <tr>
+                        <td class="menu-cell">Do 06.03.31
+                        </td>
+                        <td class="menu-cell">Veggie</td>
+                        <td class="menu-cell">Musterauflauf mit Gemüse</td>
+                        <td class="menu-cell text-center text-nowrap nowrap">2</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div style="padding-top: 10px">
+            <div class="col-sm-4 col-xs-6">
+                <a href="/kunden/bestelluebersicht/?child_id=11111&date_from=02.03.2031&pdf=1&date_to=12.05.2031"
+                   class="btn btn-default">PDF abrufen</a><br>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="results panel panel-default panel-mealplan" id="order-table">
+    <div class="panel-heading">
+            <span class="childname">Muster, Ben</span>
+    </div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table style="width: 100%" class="table food-order">
+                <thead>
+                <tr>
+                    <th class="top">Datum</th>
+                    <th>Menü</th>
+                    <th>Beschreibung</th>
+                    <th>Menge</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="menu-cell">Mo 03.03.31
+                        </td>
+                        <td class="menu-cell">Veggie</td>
+                        <td class="menu-cell">Beispielgnocchi mit Gemüse
+(Karotte, Zwiebeln) an Mustersoße</td>
+                        <td class="menu-cell text-center text-nowrap nowrap">1</td>
+                    </tr>
+                    <tr>
+                        <td class="menu-cell">Mi 05.03.31
+                        </td>
+                        <td class="menu-cell">Zertifiziert</td>
+                        <td class="menu-cell">Testschnitzel mit Beispielkartoffeln</td>
+                        <td class="menu-cell text-center text-nowrap nowrap">1</td>
+                    </tr>
+                    <tr>
+                        <td class="menu-cell">Fr 07.03.31
+                        </td>
+                        <td class="menu-cell">Zertifiziert</td>
+                        <td class="menu-cell">Mustereintopf
+mit Karotten, Erbsen &amp; Nudeln
+Testbrötchen</td>
+                        <td class="menu-cell text-center text-nowrap nowrap">1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div style="padding-top: 10px">
+            <div class="col-sm-4 col-xs-6">
+                <a href="/kunden/bestelluebersicht/?child_id=22222&date_from=02.03.2031&pdf=1&date_to=12.05.2031"
+                   class="btn btn-default">PDF abrufen</a><br>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
+            </div>
+        </div>
+    </body>
+</html>

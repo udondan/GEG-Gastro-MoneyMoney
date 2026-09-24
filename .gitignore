@@ -1,0 +1,8 @@
+# Saved real pages from the portal (contain personal data), never commit
+test.html
+test/pages/
+
+# Claude Code worktrees
+.claude/worktrees/
+
+.DS_Store
