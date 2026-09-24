@@ -3,35 +3,36 @@
 -- MoneyMoney WebBanking extension for the GEG Gastro meal ordering portal
 -- (https://www.bestellung-geggastro.de). The portal has no API, so this
 -- extension logs in with the customer's credentials, loads the order
--- overview page and scrapes the balance ("Guthaben") and the meal orders
--- of all children on the account.
+-- overview page with the meal orders of all children on the account and the
+-- balance page ("Guthaben") with every debit and top-up of the balance.
 --
 -- Account model: one MoneyMoney account per portal login. Every meal order
 -- becomes one transaction; the meal is the transaction's "name", the menu
--- type is the booking text and the child's name is the purpose.
--- Orders on future days are delivered as pending transactions
--- (booked = false). The portal does not show prices, so the price per order
--- comes from the account attribute "pricePerOrder" (default 3.00 EUR).
+-- type is the booking text and the child's name is the purpose. The amount
+-- is the debit of that order on the balance page, matched by child and meal
+-- date. Orders on future days are delivered as pending transactions
+-- (booked = false). Balance page entries that are not orders (top-ups)
+-- become transactions of their own.
 --
 -- MIT License, see LICENSE.
 
 local BASE_URL = "https://www.bestellung-geggastro.de"
 local LOGIN_PATH = "/login/"
 local OVERVIEW_PATH = "/kunden/bestelluebersicht/"
+local LEDGER_PATH = "/kunden/guthaben/"
 local LOGOUT_PATH = "/logout/"
 local SERVICE_NAME = "GEG Gastro"
 
 -- Globals on purpose: the offline test harness reads them.
-DEFAULT_PRICE = 3.00
-ATTR_PRICE = "pricePerOrder"
 INITIAL_LOOKBACK_YEARS = 10
 FUTURE_WEEKS = 10
 RESYNC_OVERLAP_DAYS = 7
+MAX_LEDGER_PAGES = 1000
 
 local SECONDS_PER_DAY = 24 * 60 * 60
 
 WebBanking{
-  version = 1.00,
+  version = 1.10,
   url = BASE_URL,
   services = { SERVICE_NAME },
   description = "Guthaben und Essensbestellungen von GEG Gastro (bestellung-geggastro.de)",
@@ -89,19 +90,6 @@ function parseAmount(s)
   return tonumber(s)
 end
 
--- Price per order from the account attribute. Falls back to DEFAULT_PRICE
--- when the attribute is missing, empty or not a positive number.
-function parsePrice(value)
-  if value == nil then
-    return DEFAULT_PRICE
-  end
-  local price = parseAmount(value)
-  if price == nil or price <= 0 then
-    return DEFAULT_PRICE
-  end
-  return price
-end
-
 ---------------------------------------------------------------------------
 -- Date helpers
 ---------------------------------------------------------------------------
@@ -132,6 +120,16 @@ function parseOrderDate(s)
     return nil
   end
   return os.time{ year = 2000 + tonumber(year), month = tonumber(month), day = tonumber(day), hour = 12 }
+end
+
+-- Parses a date with a four-digit year as used on the balance page, e.g.
+-- "23.09.2026 13:40:25". Returns a timestamp at noon of that day or nil.
+function parseLedgerDate(s)
+  local day, month, year = tostring(s or ""):match("(%d%d)%.(%d%d)%.(%d%d%d%d)")
+  if not day then
+    return nil
+  end
+  return os.time{ year = tonumber(year), month = tonumber(month), day = tonumber(day), hour = 12 }
 end
 
 -- Decides which date range to request from the portal.
@@ -213,33 +211,202 @@ function parseOrders(html)
   return orders
 end
 
--- Converts orders into MoneyMoney transactions. Orders up to and including
--- today are booked, later ones are pending. Returns the transaction list
--- (newest first) and the sum of the pending amounts.
-function buildTransactions(orders, price, today)
+-- Normalizes a child's name so that both spellings of the portal match: the
+-- order overview writes "Nachname, Vorname", the balance page
+-- "Vorname Nachname".
+function childKey(name)
+  local s = trim(name)
+  local last, first = s:match("^(.-),%s*(.+)$")
+  if last then
+    s = first .. " " .. last
+  end
+  s = s:gsub("%s+", " ")
+  return s:lower()
+end
+
+-- Matching key of an order: child and meal date. A child can order only one
+-- meal per day.
+function orderKey(child, date)
+  return childKey(child) .. "|" .. os.date("%Y-%m-%d", date)
+end
+
+-- Splits the text of a balance page entry that belongs to an order, e.g.
+-- "Veggie, 23.09.2031, Anna Muster". The menu may contain commas, so the
+-- text is split from the right. Returns { menu, date, child } or nil for
+-- other entries such as top-ups.
+function parseLedgerText(s)
+  local text = trim(tostring(s or ""):gsub("%s+", " "))
+  local menu, day, month, year, child = text:match("^(.*),%s*(%d%d)%.(%d%d)%.(%d%d%d%d),%s*(.-)$")
+  if not menu or trim(menu) == "" or trim(child) == "" then
+    return nil
+  end
+  return {
+    menu = trim(menu),
+    date = os.time{ year = tonumber(year), month = tonumber(month), day = tonumber(day), hour = 12 },
+    child = trim(child),
+  }
+end
+
+-- Returns the entries of one balance page, newest first:
+--   { date = <timestamp>, amount = -3.2, text = "...", order = parseLedgerText(text) }
+function parseLedger(html)
+  local entries = {}
+  html:xpath("//table[.//th[normalize-space()='Betrag']]//tr[count(td)=3]"):each(function(_, row)
+    local cells = row:xpath("./td")
+    local date = parseLedgerDate(cells:get(1):xpath(".//span"):attr("title")) or parseLedgerDate(cells:get(1):text())
+    local amount = parseAmount(cells:get(2):text())
+    local text = trim(cells:get(3):text():gsub("%s+", " "))
+    if date and amount then
+      table.insert(entries, {
+        date = date,
+        amount = amount,
+        text = text,
+        order = parseLedgerText(text),
+      })
+    end
+  end)
+  return entries
+end
+
+function hasNextLedgerPage(html)
+  return html:xpath("//ul[contains(@class,'pagination')]//a[@aria-label='Next']"):length() > 0
+end
+
+-- Loads balance pages, newest first, via fetchPage(page) -> HTML. Stops at
+-- the last page, or once a page reaches back before "from" and every key in
+-- openKeys (orderKey of the orders to price) has been seen.
+function collectLedger(fetchPage, from, openKeys)
+  local entries = {}
+  local open = {}
+  local openCount = 0
+  for key in pairs(openKeys or {}) do
+    open[key] = true
+    openCount = openCount + 1
+  end
+  local fromDay = dayStart(from)
+  local page = 1
+  while page <= MAX_LEDGER_PAGES do
+    local html = fetchPage(page)
+    local rows = parseLedger(html)
+    local reachedFrom = false
+    for _, entry in ipairs(rows) do
+      table.insert(entries, entry)
+      if entry.order then
+        local key = orderKey(entry.order.child, entry.order.date)
+        if open[key] then
+          open[key] = nil
+          openCount = openCount - 1
+        end
+      end
+      if dayStart(entry.date) < fromDay then
+        reachedFrom = true
+      end
+    end
+    if #rows == 0 or not hasNextLedgerPage(html) or (reachedFrom and openCount == 0) then
+      break
+    end
+    page = page + 1
+  end
+  return entries
+end
+
+-- Converts orders and balance page entries into MoneyMoney transactions.
+--   orders: from parseOrders, covering the days from..to
+--   ledger: from collectLedger, newest first
+-- Every order takes its amount from the matching debit. Orders up to and
+-- including today are booked, later ones are pending. Balance entries that
+-- belong to no order (top-ups) become booked transactions of their own when
+-- they were booked on or after "from". Returns the transaction list (newest
+-- first) and the sum of the pending amounts.
+function buildTransactions(orders, ledger, today, from, to)
   local transactions = {}
   local pendingBalance = 0
   local todayStart = dayStart(today)
-  for _, order in ipairs(orders) do
-    local booked = dayStart(order.date) <= todayStart
-    local amount = -price * order.quantity
-    local name = singleLine(order.description)
-    if order.quantity > 1 then
-      name = order.quantity .. "x " .. name
+  local fromDay = dayStart(from)
+  local toDay = dayStart(to)
+
+  -- The ledger is newest first, so the newest debit of a key wins and
+  -- lastPrice is the most recent price of any order.
+  local debits = {}
+  local lastPrice = nil
+  for i, entry in ipairs(ledger) do
+    if entry.order and entry.amount < 0 then
+      local key = orderKey(entry.order.child, entry.order.date)
+      if debits[key] == nil then
+        debits[key] = i
+      end
+      if lastPrice == nil then
+        lastPrice = entry.amount
+      end
     end
-    if not booked then
-      pendingBalance = pendingBalance + amount
-    end
-    table.insert(transactions, {
-      name = name,
-      amount = amount,
-      currency = "EUR",
-      bookingDate = order.date,
-      purpose = order.child,
-      bookingText = order.menu,
-      booked = booked,
-    })
   end
+
+  local used = {}
+  local childNames = {}
+  for _, order in ipairs(orders) do
+    childNames[childKey(order.child)] = order.child
+    local index = debits[orderKey(order.child, order.date)]
+    local amount = nil
+    if index then
+      used[index] = true
+      amount = ledger[index].amount
+    elseif lastPrice then
+      amount = lastPrice * order.quantity
+      print("Keine Buchung für die Bestellung von " .. order.child .. " am " .. formatDate(order.date)
+        .. " gefunden, verwende den letzten Preis " .. string.format("%.2f", -lastPrice))
+    else
+      print("Keine Buchung für die Bestellung von " .. order.child .. " am " .. formatDate(order.date)
+        .. " gefunden, Bestellung wird übersprungen")
+    end
+    if amount then
+      local booked = dayStart(order.date) <= todayStart
+      local name = singleLine(order.description)
+      if order.quantity > 1 then
+        name = order.quantity .. "x " .. name
+      end
+      if not booked then
+        pendingBalance = pendingBalance + amount
+      end
+      table.insert(transactions, {
+        name = name,
+        amount = amount,
+        currency = "EUR",
+        bookingDate = order.date,
+        purpose = order.child,
+        bookingText = order.menu,
+        booked = booked,
+      })
+    end
+  end
+
+  for i, entry in ipairs(ledger) do
+    if not used[i] and dayStart(entry.date) >= fromDay then
+      local transaction = nil
+      if entry.order == nil then
+        transaction = { name = entry.text, purpose = "" }
+      else
+        -- A debit without an order in the overview. Only possible when the
+        -- meal date lies inside the requested range; outside it the order
+        -- was or will be delivered by another refresh.
+        local mealDay = dayStart(entry.order.date)
+        if mealDay >= fromDay and mealDay <= toDay then
+          transaction = {
+            name = entry.order.menu,
+            purpose = childNames[childKey(entry.order.child)] or entry.order.child,
+          }
+        end
+      end
+      if transaction then
+        transaction.amount = entry.amount
+        transaction.currency = "EUR"
+        transaction.bookingDate = entry.date
+        transaction.bookingText = "Guthaben"
+        transaction.booked = true
+        table.insert(transactions, transaction)
+      end
+    end
+  end
+
   table.sort(transactions, function(a, b)
     if a.bookingDate ~= b.bookingDate then
       return a.bookingDate > b.bookingDate
@@ -296,16 +463,11 @@ function ListAccounts(knownAccounts)
       accountNumber = "GEG-GASTRO-" .. tostring(sessionUsername),
       type = AccountTypeOther,
       currency = "EUR",
-      -- Handed back as account.attributes in RefreshAccount. MoneyMoney does
-      -- not create the attribute from this table by itself; users add it by
-      -- hand under Konto -> Einstellungen -> Notizen (see README).
-      attributes = { [ATTR_PRICE] = string.format("%.2f", DEFAULT_PRICE) },
     },
   }
 end
 
 function RefreshAccount(account, since)
-  local price = parsePrice(account.attributes and account.attributes[ATTR_PRICE])
   local now = os.time()
   local from, to = computeDateRange(LocalStorage.lastSuccessfulSync, since, now)
 
@@ -317,15 +479,34 @@ function RefreshAccount(account, since)
     return "Bestellübersicht konnte nicht geladen werden (Sitzung abgelaufen?)."
   end
 
-  local balance = parseBalance(html)
+  local portalBalance = parseBalance(html)
   local orders = parseOrders(html)
-  local transactions, pendingBalance = buildTransactions(orders, price, now)
+
+  local openKeys = {}
+  for _, order in ipairs(orders) do
+    openKeys[orderKey(order.child, order.date)] = true
+  end
+  local ledger = collectLedger(function(page)
+    MM.printStatus("Rufe Guthaben-Umsätze ab (Seite " .. page .. ")")
+    local ledgerHtml = HTML(connection:get(BASE_URL .. LEDGER_PATH .. "?page=" .. page))
+    if not hasBalance(ledgerHtml) then
+      error("Guthaben-Seite konnte nicht geladen werden (Sitzung abgelaufen?).")
+    end
+    return ledgerHtml
+  end, from, openKeys)
+
+  local transactions, pendingBalance = buildTransactions(orders, ledger, now, from, to)
 
   LocalStorage.lastSuccessfulSync = now
-  MM.printStatus(#transactions .. " Bestellungen gefunden, Guthaben " .. MM.localizeAmount(balance, "EUR"))
+  MM.printStatus(#orders .. " Bestellungen und " .. #ledger .. " Guthaben-Umsätze gefunden, Guthaben "
+    .. MM.localizeAmount(portalBalance, "EUR"))
 
+  -- The portal deducts an order from its balance when it is placed, but
+  -- orders for future days are pending here. Add them back so that the
+  -- booked transactions sum up to the booked balance; booked plus pending
+  -- is the portal balance again.
   return {
-    balance = balance,
+    balance = portalBalance - pendingBalance,
     pendingBalance = pendingBalance,
     transactions = transactions,
   }

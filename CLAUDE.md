@@ -11,7 +11,8 @@ https://www.bestellung-geggastro.de. API reference: https://moneymoney.app/api/w
   `MM`, `LocalStorage`, `WebBanking`, constants). `Connection()` and
   `:submit()`/`:click()` are not available offline.
 - `test/test_geg_gastro.lua` — assert-style tests, run with `test/run.sh`.
-- `test/fixtures/` — synthetic HTML pages (login page, order overview).
+- `test/fixtures/` — synthetic HTML pages (login page, order overview,
+  two balance pages).
 - `link_ext.sh` — hard-links the extension into MoneyMoney's Extensions folder.
 - `docs/screenshot.png` — anonymized screenshot for the README.
 
@@ -29,7 +30,7 @@ Syntax check for the host runtime: `luac -p GEG-Gastro.lua` (Lua 5.4 or newer).
 
 - **Fixtures must be fully synthetic.** Never commit real names, meals, dates,
   child IDs or balances from the portal; they could identify the account.
-  Saved real pages (`test.html`, `test/pages/`) are gitignored and stay local.
+  Saved real pages (`test.html`, `test.htm`, `test/pages/`) are gitignored and stay local.
   Before committing, `git grep` for real values.
 - Write Lua that runs under both LuaJIT (tests) and Lua 5.4 (MoneyMoney): no
   `goto`, no `//`, no bit operators, no `utf8` module, do not reassign for-loop
@@ -41,11 +42,13 @@ Syntax check for the host runtime: `luac -p GEG-Gastro.lua` (Lua 5.4 or newer).
   go into `transactions` with `booked = false` (there is no
   `pendingTransactions` field).
 - `LocalStorage` is per bank access and empty on first run; guard for `nil`.
-- The account attribute `pricePerOrder` comes back as `account.attributes`
-  in `RefreshAccount`. MoneyMoney does not create it from the `attributes`
-  table returned by `ListAccounts`; the user adds it by hand under
-  Konto → Einstellungen → Notizen. Attribute tables must use string keys and
-  string values only.
+- Amounts come from the balance page `/kunden/guthaben/?page=N` (newest
+  first, 20 rows per page). An order row reads "Menü, dd.mm.yyyy, Vorname
+  Nachname"; it is matched to the overview ("Nachname, Vorname") by child and
+  meal date via `orderKey`. A child can order only one meal per day. The
+  portal has no cancellation rows: a cancelled order's debit just disappears.
+- The portal deducts orders when they are placed; `balance` is the portal
+  balance minus `pendingBalance` so booked transactions sum up to it.
 
 ## Manual test in MoneyMoney
 

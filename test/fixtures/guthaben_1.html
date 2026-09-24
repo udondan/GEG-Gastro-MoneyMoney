@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <title>GEG Gastro Essensbestellung - Guthaben</title>
+    </head>
+    <body>
+        <div class="container-fluid ">
+            <div class="headerTopContainer">
+            <div id="header" class="header">
+<div id="auth-box" class="auth-box">
+    <div class="inner-box user-info">
+            <a href="/logout/" class="btn btn-default btn-sm">Abmelden</a>
+                <div class="header-account-balance">
+                    Guthaben: <span id="header_account_balance_value">123,45</span> &euro;
+                </div>
+    </div>
+</div>
+      <ul id="nav" role="navigation" class="navbar nav nav-pills navigation">
+          <li class=""><a href="/kunden/essen/">Essenbestellung</a></li>
+          <li class=""><a href="/kunden/bestelluebersicht/">Bestellübersicht</a></li>
+          <li class="active"><a href="/kunden/guthaben/">Guthaben</a></li>
+      </ul>
+            </div>
+            </div>
+
+            <div class="content">
+    <div class="page-header">
+        <h1>Guthaben</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-5 col-md-4">
+            <div class="alert alert-info">Aktuelles Guthaben: 123,45 Euro</div>
+        </div>
+        <div class="col-xs-12 col-sm-7 col-md-8">
+            <div class="panel panel-default">
+    <div class="panel-heading">Guthaben aufladen per Überweisung</div>
+    <div class="panel-body">
+        <table class="table">
+            <tbody>
+                <tr>
+                    <td>Kontoinhaber:</td>
+                    <td>Beispiel Caterer GmbH</td>
+                </tr>
+                <tr>
+                    <td>IBAN:</td>
+                    <td>
+                        <span class="number-part">DE00</span>
+                        <span class="number-part">0000</span>
+                        <span class="number-part">0000</span>
+                        <span class="number-part">0000</span>
+                        <span class="number-part">0000</span>
+                        <span class="number-part">00</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Verwendungszweck:</td>
+                    <td>00000 Muster, Max</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+        </div>
+    </div>
+
+    <h4 id="orders">Umsätze:</h4>
+
+      <nav>
+        <ul class="pagination">
+          <li class="disabled">
+              <span aria-label="Previous"><span aria-hidden="true">&laquo;</span></span>
+          </li>
+              <li class="active"><a href="#orders">1</a></li>
+              <li><a href="?page=2#orders">2</a></li>
+          <li class="">
+              <a href="?page=2#orders" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+          </li>
+        </ul>
+      </nav>
+
+		<table class="table">
+			<tbody>
+				<tr>
+					<th class="header col-lg-2 col-md-2 col-xs-3">Datum</th>
+					<th class="header col-lg-2 col-md-2 col-xs-3">Betrag</th>
+					<th class="header">Bestellübersicht</th>
+				</tr>
+
+		<tr>
+			<td><span title="04.03.2031 10:12:31">04.03.2031</span></td>
+			<td align="right">-3,20 EUR</td>
+			<td>Zertifiziert, 07.03.2031, Ben Muster</td>
+		</tr>
+
+		<tr>
+			<td><span title="03.03.2031 00:00:00">03.03.2031</span></td>
+			<td align="right">25,00 EUR</td>
+			<td>Überweisungseingang vom 03.03.2031</td>
+		</tr>
+
+		<tr>
+			<td><span title="01.03.2031 16:03:39">01.03.2031</span></td>
+			<td align="right">-3,20 EUR</td>
+			<td>Großer Testsalat, mit Brötchen, 06.03.2031, Anna Muster</td>
+		</tr>
+
+		<tr>
+			<td><span title="01.03.2031 16:02:06">01.03.2031</span></td>
+			<td align="right">-3,20 EUR</td>
+			<td>Zertifiziert, 05.03.2031, Ben Muster</td>
+		</tr>
+			</tbody>
+		</table>
+
+            </div>
+        </div>
+    </body>
+</html>

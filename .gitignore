@@ -1,5 +1,6 @@
 # Saved real pages from the portal (contain personal data), never commit
 test.html
+test.htm
 test/pages/
 
 # Claude Code worktrees
