@@ -7,6 +7,8 @@ Essensbestellungen aus dem Bestellportal von GEG Gastro
 Das Portal bietet keine Schnittstelle. Die Erweiterung meldet sich mit den
 Zugangsdaten des Kundenkontos an und liest die Seite »Bestellübersicht« aus.
 
+![Essensbestellungen als Umsätze in MoneyMoney](docs/screenshot.png)
+
 ## Was die Erweiterung liefert
 
 - **Ein Konto** pro Portal-Login mit dem aktuellen Guthaben als Saldo.
