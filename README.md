@@ -17,11 +17,9 @@ Zugangsdaten des Kundenkontos an und liest die Seite »Bestellübersicht« aus.
   im Verwendungszweck. Mehrere Kinder werden automatisch erkannt.
 - **Zukünftige Bestellungen als vorgemerkte Umsätze.** Bestellungen ab morgen
   erscheinen als vorgemerkt, Bestellungen bis einschließlich heute als gebucht.
-- **Preis pro Bestellung.** Das Portal zeigt keine Preise. Der Preis kommt aus
-  dem Konto-Attribut `pricePerOrder` (Standard `3.00`), das in den
-  Kontoeinstellungen von MoneyMoney geändert werden kann. Eine Änderung wirkt
-  auf die Umsätze ab dem nächsten Abruf; bereits importierte Umsätze bleiben
-  unverändert.
+- **Preis pro Bestellung.** Das Portal zeigt keine Preise. Jede Bestellung
+  wird mit einem festen Preis gebucht (Standard 3,00 €), der sich in MoneyMoney
+  ändern lässt, siehe [Preis pro Bestellung ändern](#preis-pro-bestellung-ändern).
 
 Beim ersten Abruf werden Bestellungen der letzten 10 Jahre geladen, danach
 jeweils ab dem letzten Abruf bis 10 Wochen in die Zukunft.
@@ -36,6 +34,26 @@ jeweils ab dem letzten Abruf bis 10 Wochen in die Zukunft.
    »Digitale Signatur von Extensions überprüfen« deaktivieren.
 3. In MoneyMoney »Konto« → »Konto hinzufügen« → »Andere« → »GEG Gastro«
    wählen und die Zugangsdaten des Portals eingeben.
+
+## Preis pro Bestellung ändern
+
+Der Preis ist als Konto-Attribut `pricePerOrder` hinterlegt und wird beim
+Anlegen des Kontos auf `3.00` gesetzt. So wird er geändert:
+
+1. In MoneyMoney das Konto »GEG Gastro Essensbestellung« in der Seitenleiste
+   auswählen.
+2. »Konto« → »Einstellungen…« öffnen (oder Rechtsklick auf das Konto →
+   »Einstellungen…«).
+3. Den Reiter »Notizen« wählen. Dort steht die Zeile `pricePerOrder` mit dem
+   aktuellen Wert.
+4. Den Wert ändern, z. B. auf `3.50` (Punkt oder Komma sind beide erlaubt),
+   und die Einstellungen schließen.
+5. Einen Kontenrundruf starten.
+
+Der neue Preis gilt für alle Umsätze, die ab diesem Abruf geliefert werden:
+vorgemerkte Bestellungen und Bestellungen seit dem letzten Abruf. Bereits
+importierte Umsätze behalten ihren alten Betrag. Ist der Wert leer oder keine
+Zahl, wird wieder mit 3,00 € gerechnet.
 
 ## Nicht enthalten
 
