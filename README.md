@@ -7,6 +7,12 @@ Essensbestellungen aus dem Bestellportal von GEG Gastro
 Das Portal bietet keine Schnittstelle. Die Erweiterung meldet sich mit den
 Zugangsdaten des Kundenkontos an und liest die Seite »Bestellübersicht« aus.
 
+> [!NOTE]
+> Dies ist ein inoffizielles Projekt. Es steht in keiner Verbindung zur
+> GEG Gastro Service GmbH oder zu schulmenueplaner.de und wird von diesen
+> weder unterstützt noch geprüft. Der Name »GEG Gastro« dient nur dazu, das
+> Portal zu bezeichnen, aus dem die Erweiterung Daten abruft.
+
 ![Essensbestellungen als Umsätze in MoneyMoney](docs/screenshot.png)
 
 ## Was die Erweiterung liefert
