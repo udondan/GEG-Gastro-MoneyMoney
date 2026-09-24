@@ -41,9 +41,11 @@ Syntax check for the host runtime: `luac -p GEG-Gastro.lua` (Lua 5.4 or newer).
   go into `transactions` with `booked = false` (there is no
   `pendingTransactions` field).
 - `LocalStorage` is per bank access and empty on first run; guard for `nil`.
-- The account attribute `pricePerOrder` (from `ListAccounts`) is shown in
-  MoneyMoney's account settings and comes back as `account.attributes` in
-  `RefreshAccount`. Attribute tables must use string keys and string values only.
+- The account attribute `pricePerOrder` comes back as `account.attributes`
+  in `RefreshAccount`. MoneyMoney does not create it from the `attributes`
+  table returned by `ListAccounts`; the user adds it by hand under
+  Konto → Einstellungen → Notizen. Attribute tables must use string keys and
+  string values only.
 
 ## Manual test in MoneyMoney
 

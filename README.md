@@ -37,23 +37,26 @@ jeweils ab dem letzten Abruf bis 10 Wochen in die Zukunft.
 
 ## Preis pro Bestellung ändern
 
-Der Preis ist als Konto-Attribut `pricePerOrder` hinterlegt und wird beim
-Anlegen des Kontos auf `3.00` gesetzt. So wird er geändert:
+Ohne weitere Einstellung rechnet die Erweiterung mit 3,00 € pro Bestellung.
+Ein anderer Preis wird über ein Konto-Attribut namens `pricePerOrder`
+festgelegt. MoneyMoney legt dieses Attribut nicht von selbst an; es muss
+einmalig von Hand eingetragen werden:
 
 1. In MoneyMoney das Konto »GEG Gastro Essensbestellung« in der Seitenleiste
    auswählen.
 2. »Konto« → »Einstellungen…« öffnen (oder Rechtsklick auf das Konto →
    »Einstellungen…«).
-3. Den Reiter »Notizen« wählen. Dort steht die Zeile `pricePerOrder` mit dem
-   aktuellen Wert.
-4. Den Wert ändern, z. B. auf `3.50` (Punkt oder Komma sind beide erlaubt),
-   und die Einstellungen schließen.
-5. Einen Kontenrundruf starten.
+3. Den Reiter »Notizen« wählen. Dort befindet sich die Tabelle mit den
+   Attributen des Kontos.
+4. Eine neue Zeile hinzufügen: als Name `pricePerOrder`, als Wert den Preis,
+   z. B. `3.50` (Punkt oder Komma sind beide erlaubt). Existiert die Zeile
+   schon, nur den Wert ändern.
+5. Die Einstellungen schließen und einen Kontenrundruf starten.
 
 Der neue Preis gilt für alle Umsätze, die ab diesem Abruf geliefert werden:
 vorgemerkte Bestellungen und Bestellungen seit dem letzten Abruf. Bereits
-importierte Umsätze behalten ihren alten Betrag. Ist der Wert leer oder keine
-Zahl, wird wieder mit 3,00 € gerechnet.
+importierte Umsätze behalten ihren alten Betrag. Fehlt das Attribut oder ist
+der Wert leer oder keine Zahl, wird mit 3,00 € gerechnet.
 
 ## Nicht enthalten
 

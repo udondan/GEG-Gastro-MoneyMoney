@@ -296,8 +296,9 @@ function ListAccounts(knownAccounts)
       accountNumber = "GEG-GASTRO-" .. tostring(sessionUsername),
       type = AccountTypeOther,
       currency = "EUR",
-      -- Shown as editable attributes in the account settings of MoneyMoney
-      -- and handed back as account.attributes in RefreshAccount.
+      -- Handed back as account.attributes in RefreshAccount. MoneyMoney does
+      -- not create the attribute from this table by itself; users add it by
+      -- hand under Konto -> Einstellungen -> Notizen (see README).
       attributes = { [ATTR_PRICE] = string.format("%.2f", DEFAULT_PRICE) },
     },
   }
