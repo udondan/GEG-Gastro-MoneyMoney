@@ -58,6 +58,13 @@ vorgemerkte Bestellungen und Bestellungen seit dem letzten Abruf. Bereits
 importierte Umsätze behalten ihren alten Betrag. Fehlt das Attribut oder ist
 der Wert leer oder keine Zahl, wird mit 3,00 € gerechnet.
 
+Jeder Abruf holt die Bestellungen ab einer Woche vor dem letzten erfolgreichen
+Abruf. MoneyMoney erkennt einen Umsatz nur dann als bereits vorhanden, wenn
+auch der Betrag übereinstimmt. Nach einer Preisänderung erscheinen die
+Bestellungen aus dieser Überlappung daher doppelt, einmal mit dem alten und
+einmal mit dem neuen Betrag. Das ist gewollt: So lässt sich für jede
+Bestellung der Umsatz mit dem falschen Preis von Hand löschen.
+
 ## Nicht enthalten
 
 - Guthaben-Aufladungen als Habenbuchungen.
