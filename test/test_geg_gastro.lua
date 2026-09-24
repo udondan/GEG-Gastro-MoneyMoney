@@ -35,6 +35,8 @@ eq(env.SupportsBank("ProtocolWebBanking", "Other"), false, "SupportsBank rejects
 -- String / amount helpers ---------------------------------------------------
 eq(env.trim("  a b \n"), "a b", "trim")
 eq(env.normalizeMultiline("  Testsuppe \r\n***\n\n  Nudeln mit\nSoße  "), "Testsuppe\n***\nNudeln mit\nSoße", "normalizeMultiline")
+eq(env.singleLine("  Testsuppe \r\n***\n\n  Nudeln mit\nSoße  "), "Testsuppe | Nudeln mit Soße", "singleLine")
+eq(env.singleLine("Einzeiler"), "Einzeiler", "singleLine keeps single line")
 eq(env.parseAmount("98,00"), 98.0, "parseAmount German")
 eq(env.parseAmount("1.234,56"), 1234.56, "parseAmount thousands separator")
 eq(env.parseAmount("3.50"), 3.5, "parseAmount dot decimal")
@@ -108,16 +110,17 @@ eq(ymd(transactions[5].bookingDate), "2031-03-03", "oldest last")
 
 local byKey = {}
 for _, t in ipairs(transactions) do
-  byKey[t.name .. " " .. ymd(t.bookingDate)] = t
+  byKey[t.purpose .. " " .. ymd(t.bookingDate)] = t
 end
 eq(byKey["Muster, Anna 2031-03-03"].booked, true, "past order is booked")
 eq(byKey["Muster, Anna 2031-03-03"].amount, -3.0, "amount is minus price")
 eq(byKey["Muster, Anna 2031-03-03"].bookingText, "Zertifiziert", "menu in bookingText")
-eq(byKey["Muster, Anna 2031-03-03"].purpose, "Testsuppe\n***\nBeispielnudeln mit\nMustersoße", "description in purpose")
+eq(byKey["Muster, Anna 2031-03-03"].name, "Testsuppe | Beispielnudeln mit Mustersoße", "meal in name, single line")
+eq(byKey["Muster, Anna 2031-03-03"].purpose, "Muster, Anna", "child in purpose")
 eq(byKey["Muster, Ben 2031-03-05"].booked, true, "order of today is booked")
 eq(byKey["Muster, Anna 2031-03-06"].booked, false, "future order is pending")
 eq(byKey["Muster, Anna 2031-03-06"].amount, -6.0, "quantity 2 doubles the amount")
-eq(byKey["Muster, Anna 2031-03-06"].purpose, "2x Musterauflauf mit Gemüse", "quantity prefix in purpose")
+eq(byKey["Muster, Anna 2031-03-06"].name, "2x Musterauflauf mit Gemüse", "quantity prefix in name")
 eq(byKey["Muster, Ben 2031-03-07"].booked, false, "future order is pending")
 eq(pendingBalance, -9.0, "pending balance is the sum of pending amounts")
 for _, t in ipairs(transactions) do

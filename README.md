@@ -10,10 +10,10 @@ Zugangsdaten des Kundenkontos an und liest die Seite »Bestellübersicht« aus.
 ## Was die Erweiterung liefert
 
 - **Ein Konto** pro Portal-Login mit dem aktuellen Guthaben als Saldo.
-- **Ein Umsatz pro Bestellung.** Der Name des Kindes steht im Feld »Name«, das
-  Menü (z. B. »Zertifiziert« oder »Veggie«) im Buchungstext und die
-  Beschreibung des Essens im Verwendungszweck. Mehrere Kinder werden
-  automatisch erkannt.
+- **Ein Umsatz pro Bestellung.** Das Essen steht im Feld »Name« (einzeilig,
+  Gänge mit »|« getrennt), das Menü (z. B. »Zertifiziert« oder »Veggie«) im
+  Buchungstext und der Name des Kindes im Verwendungszweck. Mehrere Kinder
+  werden automatisch erkannt.
 - **Zukünftige Bestellungen als vorgemerkte Umsätze.** Bestellungen ab morgen
   erscheinen in MoneyMoney als vorgemerkt, Bestellungen bis einschließlich
   heute als gebucht.

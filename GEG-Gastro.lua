@@ -7,8 +7,8 @@
 -- of all children on the account.
 --
 -- Account model: one MoneyMoney account per portal login. Every meal order
--- becomes one transaction; the child's name is the transaction's "name",
--- the menu type is the booking text and the meal description is the purpose.
+-- becomes one transaction; the meal is the transaction's "name", the menu
+-- type is the booking text and the child's name is the purpose.
 -- Orders on future days are delivered as pending transactions
 -- (booked = false). The portal does not show prices, so the price per order
 -- comes from the account attribute "pricePerOrder" (default 3.00 EUR).
@@ -62,6 +62,20 @@ function normalizeMultiline(s)
     end
   end
   return table.concat(lines, "\n")
+end
+
+-- Collapses a multi-line meal description into one line for the transaction
+-- name. The portal separates courses with a "***" line; it becomes " | ".
+function singleLine(s)
+  local parts = {}
+  for line in (normalizeMultiline(s) .. "\n"):gmatch("([^\n]*)\n") do
+    if line == "***" then
+      table.insert(parts, "|")
+    else
+      table.insert(parts, line)
+    end
+  end
+  return table.concat(parts, " ")
 end
 
 -- Parses a German formatted amount such as "1.234,56" or "3,00" into a number.
@@ -209,19 +223,19 @@ function buildTransactions(orders, price, today)
   for _, order in ipairs(orders) do
     local booked = dayStart(order.date) <= todayStart
     local amount = -price * order.quantity
-    local purpose = order.description
+    local name = singleLine(order.description)
     if order.quantity > 1 then
-      purpose = order.quantity .. "x " .. purpose
+      name = order.quantity .. "x " .. name
     end
     if not booked then
       pendingBalance = pendingBalance + amount
     end
     table.insert(transactions, {
-      name = order.child,
+      name = name,
       amount = amount,
       currency = "EUR",
       bookingDate = order.date,
-      purpose = purpose,
+      purpose = order.child,
       bookingText = order.menu,
       booked = booked,
     })
@@ -230,7 +244,7 @@ function buildTransactions(orders, price, today)
     if a.bookingDate ~= b.bookingDate then
       return a.bookingDate > b.bookingDate
     end
-    return a.name < b.name
+    return a.purpose < b.purpose
   end)
   return transactions, pendingBalance
 end
