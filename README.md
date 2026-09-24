@@ -52,21 +52,6 @@ Seiten der Guthaben-Umsätze, wie dafür nötig sind.
 3. In MoneyMoney »Konto« → »Konto hinzufügen« → »Andere« → »GEG Gastro«
    wählen und die Zugangsdaten des Portals eingeben.
 
-## Umstieg von Version 1.00
-
-Version 1.00 hat jede Bestellung mit einem festen Preis gebucht (3,00 € oder
-dem Wert des Konto-Attributs `pricePerOrder`). Ab Version 1.10 stammen die
-Beträge aus dem Portal, und das Attribut wird nicht mehr gelesen. Es kann unter
-»Konto« → »Einstellungen…« → »Notizen« gelöscht werden.
-
-MoneyMoney erkennt einen Umsatz nur dann als bereits vorhanden, wenn auch der
-Betrag übereinstimmt. Weicht der echte Preis vom bisher eingetragenen ab,
-erscheinen die Bestellungen der letzten Woche vor dem Update doppelt, einmal
-mit dem alten und einmal mit dem echten Betrag. Die Umsätze mit dem alten
-Betrag lassen sich von Hand löschen. Aufladungen vor dem ersten Abruf mit
-Version 1.10 werden nicht nachgeliefert, weil sie vor dem abgerufenen Zeitraum
-liegen.
-
 ## Nicht enthalten
 
 - Stornos bereits gebuchter Bestellungen. Das Portal löscht die Buchung
