@@ -1,0 +1,13 @@
+{
+  "runtime.version": "Lua 5.4",
+  "diagnostics.globals": [
+    "AccountTypeOther",
+    "Connection",
+    "HTML",
+    "LocalStorage",
+    "LoginFailed",
+    "MM",
+    "ProtocolWebBanking",
+    "WebBanking"
+  ]
+}
