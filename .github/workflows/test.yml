@@ -41,7 +41,10 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libxml2
+          # libxml2-dev provides the unversioned libxml2.so that xmlua loads
+          # first. The runtime package name changes with the soname (libxml2
+          # on Ubuntu 24.04, libxml2-16 on 26.04); the -dev package doesn't.
+          sudo apt-get install -y --no-install-recommends libxml2-dev
           luarocks install xmlua 1.2.2-0
 
       - name: Run tests
