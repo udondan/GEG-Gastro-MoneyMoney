@@ -1,5 +1,9 @@
 # GEG Gastro für MoneyMoney
 
+> [!NOTE]
+> Inoffizielles Community-Projekt. Nicht mit der GEG Gastro Service GmbH oder
+> schulmenueplaner.de verbunden, nicht von ihnen unterstützt oder autorisiert.
+
 Eine [MoneyMoney](https://moneymoney.app)-Erweiterung, die das Guthaben und die
 Essensbestellungen aus dem Bestellportal von GEG Gastro
 (<https://www.bestellung-geggastro.de>) abruft.
@@ -7,12 +11,6 @@ Essensbestellungen aus dem Bestellportal von GEG Gastro
 Das Portal bietet keine Schnittstelle. Die Erweiterung meldet sich mit den
 Zugangsdaten des Kundenkontos an und liest die Seiten »Bestellübersicht« und
 »Guthaben« aus.
-
-> [!NOTE]
-> Dies ist ein inoffizielles Projekt. Es steht in keiner Verbindung zur
-> GEG Gastro Service GmbH oder zu schulmenueplaner.de und wird von diesen
-> weder unterstützt noch geprüft. Der Name »GEG Gastro« dient nur dazu, das
-> Portal zu bezeichnen, aus dem die Erweiterung Daten abruft.
 
 ![Essensbestellungen als Umsätze in MoneyMoney](docs/screenshot.png)
 
@@ -61,3 +59,14 @@ Seiten der Guthaben-Umsätze, wie dafür nötig sind.
 ## Lizenz
 
 MIT, siehe [LICENSE](LICENSE).
+
+## Disclaimer
+
+Dieses Projekt ist ein inoffizielles, unabhängiges Open-Source-Projekt und
+steht in keiner Verbindung zur GEG Gastro Service GmbH oder zu
+schulmenueplaner.de. GEG Gastro ist ein Name bzw. eine Marke der GEG Gastro
+Service GmbH. Der Name wird ausschließlich verwendet, um das Portal zu
+bezeichnen, aus dem die Erweiterung Daten abruft. Das Portal bietet keine
+öffentliche Schnittstelle; Änderungen am Portal können die Erweiterung
+jederzeit unbrauchbar machen. Die Nutzung erfolgt auf eigenes Risiko und unter
+Beachtung der Nutzungsbedingungen des Bestellportals.
